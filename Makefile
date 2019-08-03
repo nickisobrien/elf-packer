@@ -1,23 +1,23 @@
 TARGET = packer
 
+CC ?= gcc
+
 SRCDIR := src
 INCDIR := src
 OBJDIR := obj
 
 SRC := $(wildcard $(SRCDIR)/*.c)
-INC := $(wildcard $(SRCDIR)/*.h)
 OBJ := $(src:.c=.o)
-CC ?= gcc
 
-LDFLAGS +=
-CFLAGS +=
+LDFLAGS :=
+CFLAGS :=
 
 $(TARGET): $(SRC)
-	echo $(CC)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -I$(INC)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -I$(INCDIR)
 
-.PHONY: clean
 clean:
-	rm -f $(obj) myprog
+	rm -f $(OBJ) $(TARGET)
 
 re: clean $(TARGET)
+
+.PHONY: re clean
