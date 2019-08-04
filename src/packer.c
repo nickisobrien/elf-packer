@@ -4,11 +4,12 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "elf.h"
 #include "packer.h"
 
 static void usage(void)
 {
-    printf("Usage: ./packer <elf-file>\n");
+    printf("Usage: ./packer <elf-file> <target-file> <stub-file>\n");
     exit(-1);
 }
 
@@ -18,40 +19,66 @@ static void invalid_file(void)
     exit(-1);
 }
 
-static int is_elf(elf_header *hdr)
+FILE *duplicate_file(const char *target_name, elf_header *hdr, FILE *source)
 {
-    if (hdr->e_ident[0] != 0x7f)
-        return 0;
-    if (strncmp((char *)hdr->e_ident+1, ELF_MAG_HEADER, 3))
-        return 0;
-    return 1;
+    FILE *targetfp;
+    int ch;
+    int i;
+
+    if(!(targetfp = fopen(target_name, "w")))
+    {
+        printf("Couldn't create target\n");
+        exit -1;
+    }
+
+    for (i = 0; i < sizeof(elf_header) - 1; i++)
+        fputc(((char *)hdr)[i], targetfp);
+
+    while ((ch = fgetc(source)) != EOF)
+        fputc(ch, targetfp);
+
+    return targetfp;
 }
 
-elf_header *read_elf_header(int fd)
+FILE *add_stub(FILE *targetfp, char *stub_name)
 {
-    elf_header *hdr = (elf_header *)malloc(sizeof(elf_header));
-    int read_size = 0;
-    if ((read_size = read(fd, hdr, ELF_HDR_SIZE)) < ELF_HDR_SIZE)
-        invalid_file();
-    return hdr;
+    FILE *stubfp;
+    int ch;
+
+    if ((stubfp = fopen(stub_name, "r")) == NULL)
+    {
+        printf("Couldn't open stub\n");
+        exit -1;
+    }
+    while ((ch = fgetc(stubfp)) != EOF)
+        fputc(ch, targetfp);
+
+    fclose(stubfp);
+    return targetfp;
 }
 
 int	main(int ac, char **av)
 {
-    int fd;
+    FILE *sourcefp, *targetfp;
+    elf_header *elf_hdr;
 
-    if (ac < 2)
+    if (ac < 3)
         usage();
 
-    if ((fd = open(av[1], O_RDWR)) == -1)
+    if ((sourcefp = fopen(av[1], "r+")) == NULL)
         invalid_file();
 
-    elf_header *elf_hdr = read_elf_header(fd);
+    if (!(elf_hdr = get_elf_header(sourcefp)))
+        invalid_file();
+
     if (!is_elf(elf_hdr))
         invalid_file();
 
-    printf("Program entry point: %llu\n", elf_hdr->e_entry);
-    printf("Changing program entry point to %llu\n", 0llu);
+    targetfp = duplicate_file(av[2], elf_hdr, sourcefp);
+    fclose(sourcefp);
+    targetfp = add_stub(targetfp, av[3]);
+
+    fclose(targetfp);
 
     return 0;
 }
