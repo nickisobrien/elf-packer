@@ -16,7 +16,7 @@ int is_elf(elf_header *hdr)
 elf_header *get_elf_header(FILE *fp)
 {
     elf_header *hdr = (elf_header *)malloc(sizeof(elf_header));
-    if (fgets((char *)hdr, ELF_HDR_SIZE, fp) == NULL)
+    if (fgets((char *)hdr, sizeof(elf_header) + 1, fp) == NULL)
         return NULL;
     return hdr;
 }
