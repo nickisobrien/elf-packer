@@ -1,7 +1,4 @@
-#include <stdio.h>
-
-int	main(void)
+int	loader(void)
 {
-	printf("Hello world!");
 	return 0;
 }
