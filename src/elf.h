@@ -5,13 +5,11 @@
 
 #if UINTPTR_MAX == 0xffffffff
 /* 32-bit */
-#define ELF_HEADER_SIZE 52
 typedef uint32_t ElfN_Addr;
 typedef uint32_t ElfN_Off;
 
 #elif UINTPTR_MAX == 0xffffffffffffffff
 /* 64-bit */
-#define ELF_HDR_SIZE 64
 typedef uint64_t ElfN_Addr;
 typedef uint64_t ElfN_Off;
 
@@ -19,7 +17,7 @@ typedef uint64_t ElfN_Off;
 
 #define EI_NIDENT 16
 typedef struct {
-    unsigned char e_ident[EI_NIDENT];
+    uint8_t       e_ident[EI_NIDENT];
     uint16_t      e_type;
     uint16_t      e_machine;
     uint32_t      e_version;
@@ -36,7 +34,6 @@ typedef struct {
 } elf_header;
 
 #define ELF_MAG_HEADER "ELF"
-
 
 int is_elf(elf_header *hdr);
 elf_header *get_elf_header(FILE *fp);
