@@ -11,7 +11,7 @@ static void print_program_headers(program_header **hdrs)
 
     for (i = 0; hdrs[i]; i++)
     {
-        printf("Type:%08x, Offset:%08lx, Filesz:%08lx,Memsz:%08lx, Align:%08lx, Paddr:%08lx, Vaddr:%08lx, Flags:%08x\n",
+        printf("Type:%#08x, Offset:%#08lx, Filesz:%#08lx, Memsz:%#08lx, Align:%#08lx, Paddr:%#08lx, Vaddr:%#08lx, Flags:%#08x\n",
                hdrs[i]->p_type,
                hdrs[i]->p_offset,
                hdrs[i]->p_filesz,

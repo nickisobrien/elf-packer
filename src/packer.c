@@ -92,6 +92,7 @@ int	main(int ac, char **av)
     printf("Target program header addr: %08lx\n", elf_hdr->e_phoff);
     if (!(prog_hdrs = get_program_headers(sourcefp, elf_hdr->e_phnum)))
         invalid_file();
+    printf("Section header location: %#08lx\n", elf_hdr->e_shoff);
 
    /* elf_hdr->e_entry = 0x880; */
     /* prog_hdrs[2]->p_filesz += 0x2f0; */
