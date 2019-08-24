@@ -32,7 +32,7 @@ FILE *duplicate_file(const char *target_name, elf_header *elf_hdr,
     if(!(targetfp = fopen(target_name, "w")))
     {
         printf("Couldn't create target\n");
-        exit -1;
+        exit(-1);
     }
 
     for (i = 0; i < sizeof(elf_header); i++, counter++)
@@ -62,7 +62,7 @@ FILE *add_stub(FILE *targetfp, char *stub_name)
     if ((stubfp = fopen(stub_name, "r")) == NULL)
     {
         printf("Couldn't open stub\n");
-        exit -1;
+        exit(-1);
     }
     while ((ch = fgetc(stubfp)) != EOF)
         fputc(ch, targetfp);
