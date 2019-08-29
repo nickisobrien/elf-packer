@@ -5,7 +5,8 @@
 #include "program.h"
 #include "elf.h"
 
-static void print_program_headers(program_header **hdrs)
+static void
+print_program_headers(program_header **hdrs)
 {
     int i;
 
@@ -23,7 +24,8 @@ static void print_program_headers(program_header **hdrs)
     }
 }
 
-program_header **get_program_headers(FILE *fp, uint16_t e_phnum)
+program_header **
+get_program_headers(FILE *fp, uint16_t e_phnum)
 {
     int i;
     program_header **hdrs = (program_header **)malloc(sizeof(program_header *) * e_phnum);

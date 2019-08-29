@@ -5,7 +5,8 @@
 #include "section.h"
 #include "elf.h"
 
-static void print_section_headers(section_header **hdrs)
+static void
+print_section_headers(section_header **hdrs)
 {
     int i;
 
@@ -23,7 +24,8 @@ static void print_section_headers(section_header **hdrs)
     }
 }
 
-section_header **get_section_headers(FILE *fp, uint16_t e_shnum)
+section_header **
+get_section_headers(FILE *fp, uint16_t e_shnum)
 {
     int i;
     section_header **hdrs = (section_header **)malloc(sizeof(section_header *) * e_shnum);

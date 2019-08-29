@@ -4,7 +4,8 @@
 
 #include "elf.h"
 
-static void print_elf_header(elf_header *hdr)
+static void
+print_elf_header(elf_header *hdr)
 {
     printf("Entry: %#08lx, program header: %#08lx, section header: %#08lx, section header entry size: %#08x\n",
            hdr->e_entry,
@@ -14,7 +15,8 @@ static void print_elf_header(elf_header *hdr)
         );
 }
 
-int is_elf(elf_header *hdr)
+int
+is_elf(elf_header *hdr)
 {
     if (hdr->e_ident[0] != 0x7f)
         return 0;
@@ -23,7 +25,8 @@ int is_elf(elf_header *hdr)
     return 1;
 }
 
-elf_header *get_elf_header(FILE *fp)
+elf_header*
+get_elf_header(FILE *fp)
 {
     elf_header *hdr = (elf_header *)malloc(sizeof(elf_header));
     if (fgets((char *)hdr, sizeof(elf_header) + 1, fp) == NULL)

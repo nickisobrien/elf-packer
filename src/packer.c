@@ -8,19 +8,22 @@
 #include "packer.h"
 #include "program.h"
 
-static void usage(void)
+static void
+usage(void)
 {
     printf("Usage: ./packer <elf-file> <target-file> <stub-file>\n");
     exit(-1);
 }
 
-static void invalid_file(void)
+static void
+invalid_file(void)
 {
     printf("Invalid file, ELF file expected\n");
     exit(-1);
 }
 
-FILE *duplicate_file(const char *target_name, elf_header *elf_hdr,
+FILE *
+duplicate_file(const char *target_name, elf_header *elf_hdr,
                      program_header **prog_hdrs, FILE *source, char *stub_name)
 {
     FILE *targetfp;
@@ -54,7 +57,8 @@ FILE *duplicate_file(const char *target_name, elf_header *elf_hdr,
     return targetfp;
 }
 
-FILE *add_stub(FILE *targetfp, char *stub_name)
+FILE *
+add_stub(FILE *targetfp, char *stub_name)
 {
     FILE *stubfp;
     int ch;
@@ -71,7 +75,8 @@ FILE *add_stub(FILE *targetfp, char *stub_name)
     return targetfp;
 }
 
-int	main(int ac, char **av)
+int
+main(int ac, char **av)
 {
     FILE *sourcefp, *targetfp;
     elf_header *elf_hdr;
