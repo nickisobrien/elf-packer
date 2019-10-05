@@ -7,10 +7,10 @@
 static void
 print_elf_header(elf_header *hdr)
 {
-	printf("Entry: %#08lx, \
-			program header: %#08lx, \
-			section header: %#08lx, \
-			section header entry size: %#08x\n",
+	printf("Entry: %#08lx, "
+			"program header: %#08lx, "
+			"section header: %#08lx, "
+			"section header entry size: %#08x\n",
 			hdr->e_entry,
 			hdr->e_phoff,
 			hdr->e_shoff,
