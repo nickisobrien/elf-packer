@@ -25,7 +25,7 @@ invalid_file(void)
 
 FILE *
 create_packed_file(elf_header *elf_hdr, program_header **prog_hdrs,
-		section_header **sect_hdrs, FILE *source, char *stub_name)
+		FILE *source, char *stub_name)
 {
 	(void)stub_name;
 	FILE *targetfp;
@@ -58,20 +58,6 @@ create_packed_file(elf_header *elf_hdr, program_header **prog_hdrs,
 	{
 		for (i = 0; i < elf_hdr->e_phentsize; i++, bytes_written++)
 			fputc( ((uint8_t *) (prog_hdrs[j]))[i] , targetfp);
-	}
-
-	/* write till section hdrs */
-	while (bytes_written < elf_hdr->e_shoff && (ch = fgetc(source)) != EOF)
-	{
-		fputc(ch, targetfp);
-		bytes_written++;
-	}
-
-	/* write section headers */
-	for (j = 0; j < elf_hdr->e_shnum; j++)
-	{
-		for (i = 0; i < elf_hdr->e_shentsize; i++, bytes_written++)
-			fputc( ((uint8_t *) (sect_hdrs[j]))[i] , targetfp);
 	}
 
 	/* write the rest of the file */
@@ -108,7 +94,6 @@ main(int ac, char **av)
 	FILE *sourcefp, *targetfp;
 	elf_header *elf_hdr;
 	program_header **prog_hdrs;
-	section_header **sect_hdrs;
 
 	if (ac < 2)
 		usage();
@@ -125,11 +110,7 @@ main(int ac, char **av)
 	if (!(prog_hdrs = get_program_headers(sourcefp, elf_hdr->e_phnum)))
 		invalid_file();
 
-	if (!(sect_hdrs = get_section_headers(sourcefp, elf_hdr->e_shnum)))
-		invalid_file();
-
-	targetfp = create_packed_file(elf_hdr, prog_hdrs, sect_hdrs,
-			sourcefp, av[2]);
+	targetfp = create_packed_file(elf_hdr, prog_hdrs, sourcefp, av[2]);
 
 	fclose(sourcefp);
 	fclose(targetfp);
