@@ -6,12 +6,12 @@
 #include "elf.h"
 
 static void
-print_section_headers(section_header **hdrs)
+print_section_headers(section_header **hdrs, uint16_t shnum)
 {
 	int i;
 
-	printf("Section headers:\n");
-	for (i = 0; hdrs[i]; i++)
+	printf("\nSection headers:\n");
+	for (i = 0; i < shnum; i++)
 	{
 		printf("Sect: Type:%08x\n",
 			hdrs[i]->sh_type);
@@ -21,16 +21,14 @@ print_section_headers(section_header **hdrs)
 section_header **
 get_section_headers(FILE *fp, uint16_t e_shnum)
 {
-	int i;
 	section_header **hdrs = (section_header **)malloc(sizeof(section_header *) * e_shnum);
 
-	for (i = 0; i < e_shnum; i++)
+	for (int i = 0; i < e_shnum; i++)
 	{
 		hdrs[i] = (section_header *)malloc(sizeof(section_header) + 1);
-		if (fgets((char *)(hdrs[i]), sizeof(section_header) + 1, fp) == NULL)
-			return NULL;
+		for (size_t j = 0; j < sizeof(section_header); j++)
+			((char *)(hdrs[i]))[j] = fgetc(fp);
 	}
-	hdrs[i] = NULL;
-	print_section_headers(hdrs);
+	print_section_headers(hdrs, e_shnum);
 	return hdrs;
 }
