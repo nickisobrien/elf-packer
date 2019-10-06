@@ -5,7 +5,7 @@
 
 #if UINTPTR_MAX == 0xffffffff
 /* 32-bit */
-typedef struct {
+typedef struct __attribute__((packed)){
     uint32_t   sh_name;
     uint32_t   sh_type;
     uint32_t   sh_flags;
@@ -19,7 +19,7 @@ typedef struct {
 } section_header;
 #elif UINTPTR_MAX == 0xffffffffffffffff
 /* 64-bit */
-typedef struct {
+typedef struct __attribute__((packed)){
     uint32_t   sh_name;
     uint32_t   sh_type;
     uint64_t   sh_flags;

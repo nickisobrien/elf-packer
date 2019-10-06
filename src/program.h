@@ -5,7 +5,7 @@
 
 #if UINTPTR_MAX == 0xffffffff
 /* 32-bit */
-typedef struct {
+typedef struct __attribute__((packed)) {
 	uint32_t   p_type;
 	uint32_t   p_offset;
 	uint32_t   p_vaddr;
@@ -18,7 +18,7 @@ typedef struct {
 
 #elif UINTPTR_MAX == 0xffffffffffffffff
 /* 64-bit */
-typedef struct {
+typedef struct __attribute__((packed)) {
 	uint32_t   p_type;
 	uint32_t   p_flags;
 	uint64_t   p_offset;

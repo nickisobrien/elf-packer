@@ -16,7 +16,7 @@ typedef uint64_t ElfN_Off;
 #endif
 
 #define EI_NIDENT 16
-typedef struct {
+typedef struct __attribute__((packed)){
 	uint8_t		e_ident[EI_NIDENT];
 	uint16_t	e_type;
 	uint16_t	e_machine;
