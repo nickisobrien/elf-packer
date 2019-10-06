@@ -7,6 +7,7 @@
 static void
 print_elf_header(elf_header *hdr)
 {
+	printf("Elf header:\n");
 	printf("Entry: %#08lx, "
 			"program header: %#08lx, "
 			"section header: %#08lx, "

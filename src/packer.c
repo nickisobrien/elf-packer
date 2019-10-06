@@ -11,7 +11,7 @@
 static void
 usage(void)
 {
-	printf("Usage: ./packer <elf-file> <target-file> <stub-file>\n");
+	printf("Usage: ./packer <elf-file> <stub-file>\n");
 	exit(-1);
 }
 
@@ -23,34 +23,47 @@ invalid_file(void)
 }
 
 FILE *
-duplicate_file(const char *target_name, elf_header *elf_hdr,
-		program_header **prog_hdrs, FILE *source, char *stub_name)
+create_packed_file(elf_header *elf_hdr, program_header **prog_hdrs,
+		FILE *source, char *stub_name)
 {
+	(void)stub_name;
 	FILE *targetfp;
 	int ch;
-	uint32_t i, j, counter = 0;
-	// might want to use counter to inject into certain locations
-	// TODO make a struct with counter+FILE and just pass that around
+	uint32_t i, j, bytes_written = 0;
+	/* might want to use bytes_written to inject into certain locations
+	 * TODO make a struct with bytes_written+FILE and just pass that around */
 
-	if(!(targetfp = fopen(target_name, "w")))
+	if(!(targetfp = fopen("packed.elf", "w")))
 	{
 		printf("Couldn't create target\n");
 		exit(-1);
 	}
 
-	for (i = 0; i < sizeof(elf_header); i++, counter++)
+	/* write elf header */
+	for (i = 0; i < sizeof(elf_header); i++, bytes_written++)
 		fputc(((uint8_t *)elf_hdr)[i], targetfp);
 
-	for (j = 0; prog_hdrs[j]; j++)
+	/* write till program_header location
+	 * program headers typically follow elf header location
+	 * but lets account for the cases where it doesn't */
+	while (bytes_written < elf_hdr->e_phoff && (ch = fgetc(source)) != EOF)
 	{
-		for (i = 0; i < sizeof(program_header); i++, counter++)
-			fputc(((uint8_t *)prog_hdrs[j])[i], targetfp);
+		fputc(ch, targetfp);
+		bytes_written++;
 	}
 
+	/* write program headers */
+	for (j = 0; j < elf_hdr->e_phnum; j++)
+	{
+		for (i = 0; i < sizeof(program_header); i++, bytes_written++)
+			fputc( ((uint8_t *) (prog_hdrs[j]))[i] , targetfp);
+	}
+
+	/* write the rest of the file */
 	while ((ch = fgetc(source)) != EOF)
 	{
 		fputc(ch, targetfp);
-		counter++;
+		bytes_written++;
 	}
 	return targetfp;
 }
@@ -80,7 +93,7 @@ main(int ac, char **av)
 	elf_header *elf_hdr;
 	program_header **prog_hdrs;
 
-	if (ac < 3)
+	if (ac < 2)
 		usage();
 
 	if (!(sourcefp = fopen(av[1], "r+")))
@@ -92,19 +105,12 @@ main(int ac, char **av)
 	if (!is_elf(elf_hdr))
 		invalid_file();
 
-	printf("Target program header addr: %08lx\n", elf_hdr->e_phoff);
 	if (!(prog_hdrs = get_program_headers(sourcefp, elf_hdr->e_phnum)))
 		invalid_file();
-	printf("Section header location: %#08lx\n", elf_hdr->e_shoff);
 
-	/* elf_hdr->e_entry = 0x880; */
-	/* prog_hdrs[2]->p_filesz += 0x2f0; */
-	/* prog_hdrs[2]->p_memsz += 0x2f0; */
+	targetfp = create_packed_file(elf_hdr, prog_hdrs, sourcefp, av[2]);
 
-	targetfp = duplicate_file(av[2], elf_hdr, prog_hdrs, sourcefp, av[3]);
 	fclose(sourcefp);
-	/* targetfp = add_stub(targetfp, av[3]); */
-
 	fclose(targetfp);
 	return 0;
 }

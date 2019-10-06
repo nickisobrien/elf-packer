@@ -10,6 +10,7 @@ print_section_headers(section_header **hdrs)
 {
 	int i;
 
+	printf("Section headers:\n");
 	for (i = 0; hdrs[i]; i++)
 	{
 		printf("Sect: Type:%08x\n",
